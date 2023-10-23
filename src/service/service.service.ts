@@ -1,8 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateServiceDto } from './dto/create-service.dto';
-import { UpdateServiceDto } from './dto/update-service.dto';
-import { PrismaService } from '../prisma/prisma.service';
-import { Prisma } from '@prisma/client';
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { CreateServiceDto } from './dto/create-service.dto'
+import { UpdateServiceDto } from './dto/update-service.dto'
+import { PrismaService } from '../prisma/prisma.service'
+import { Prisma } from '@prisma/client'
 
 @Injectable()
 export class ServiceService {
@@ -18,27 +18,27 @@ export class ServiceService {
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
           if (error.code === 'P2002') {
             // Unique constraint violation
-            console.log('Name already exists');
-            console.log(error.meta);
+            console.log('Name already exists')
+            console.log(error.meta)
             // Provide user-friendly error message
           }
-        } else throw new Error('error');
-      });
+        } else throw new Error('error')
+      })
     if (!service) {
-      throw new Error('Error creating customer');
+      throw new Error('Error creating customer')
     } else {
-      return service;
+      return service
     }
   }
 
   async findAll() {
     const services = await this.prisma.service.findMany().catch((err) => {
-      throw err;
-    });
+      throw err
+    })
     if (!services) {
-      throw new NotFoundException('no services');
+      throw new NotFoundException('no services')
     }
-    return services;
+    return services
   }
 
   async findOne(id: number) {
@@ -47,12 +47,12 @@ export class ServiceService {
         where: { id },
       })
       .catch((err) => {
-        throw err;
-      });
+        throw err
+      })
     if (!service) {
-      throw new NotFoundException('no service');
+      throw new NotFoundException('no service')
     }
-    return service;
+    return service
   }
 
   async update(id: number, updateServiceDto: UpdateServiceDto) {
@@ -62,12 +62,12 @@ export class ServiceService {
         data: { ...updateServiceDto },
       })
       .catch((err) => {
-        throw err;
-      });
+        throw err
+      })
     if (!service) {
-      throw new NotFoundException('service not found');
+      throw new NotFoundException('service not found')
     }
-    return service;
+    return service
   }
 
   async remove(id: number) {
@@ -76,14 +76,14 @@ export class ServiceService {
         where: { id },
       })
       .catch((err) => {
-        throw err;
-      });
+        throw err
+      })
     if (!service) {
-      throw new NotFoundException('service not found');
+      throw new NotFoundException('service not found')
     }
     await this.prisma.service.delete({
       where: { id },
-    });
-    return { data: 'deleted' };
+    })
+    return { data: 'deleted' }
   }
 }

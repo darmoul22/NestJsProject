@@ -1,32 +1,43 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateCustomerDto } from './create-customer.dto';
 import {
   IsEmail,
   IsNotEmpty,
   IsNumber,
   IsNumberString,
+  IsOptional,
   IsString,
-} from 'class-validator';
+  ValidateIf,
+} from 'class-validator'
 
-export class UpdateCustomerDto extends PartialType(CreateCustomerDto) {
+export class UpdateCustomerDto {
+  @IsOptional()
   @IsString()
+  @ValidateIf((o) => o.firstName !== undefined)
   @IsNotEmpty()
-  firstName: string;
+  firstName: string
 
+  @IsOptional()
   @IsString()
+  @ValidateIf((o) => o.lastName !== undefined)
   @IsNotEmpty()
-  lastName: string;
+  lastName: string
 
+  @IsOptional()
   @IsNumberString()
-  phoneNum: string;
+  @ValidateIf((o) => o.phoneNum !== undefined)
+  phoneNum: string
 
+  @IsOptional()
+  @ValidateIf((o) => o.email !== undefined)
   @IsEmail()
-  email: string;
+  email: string
 
+  @IsOptional()
   @IsString()
-  description: string;
+  @ValidateIf((o) => o.description !== undefined)
+  description: string
 
   @IsNotEmpty()
+  @ValidateIf((o) => o.userId !== undefined)
   @IsNumber()
-  userId: number;
+  userId: number
 }

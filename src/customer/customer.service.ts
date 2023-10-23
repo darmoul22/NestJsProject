@@ -1,90 +1,34 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateCustomerDto } from './dto/create-customer.dto';
-import { UpdateCustomerDto } from './dto/update-customer.dto';
-import { PrismaService } from '../prisma/prisma.service';
+import { Injectable } from '@nestjs/common'
+import { CreateCustomerDto } from './dto/create-customer.dto'
+import { UpdateCustomerDto } from './dto/update-customer.dto'
+import { CustomerRepository } from './customer.repository'
 
 @Injectable()
 export class CustomerService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly customerRepository: CustomerRepository) {}
+
   async create(createCustomerDto: CreateCustomerDto) {
-    const customer = await this.prisma.customer
-      .create({
-        data: {
-          ...createCustomerDto,
-        },
-      })
-      .catch(() => {
-        throw new Error('Error creating customer');
-      });
-    if (!customer) {
-      throw new Error('Error creating customer');
-    } else {
-      return customer;
-    }
+    const customer = await this.customerRepository.createCustomer(createCustomerDto)
+    return customer
   }
 
   async findAllByUser(userId: number) {
-    const customers = await this.prisma.customer
-      .findMany({
-        where: {
-          userId,
-        },
-      })
-      .catch((err) => {
-        throw new Error(err);
-      });
-    if (!customers) throw new Error('Error finding customers by userId');
-    return customers;
+    const customers = await this.customerRepository.getCustomersByUserId(userId)
+    return customers
   }
 
-  async findOne(id: number) {
-    const customer = await this.prisma.customer
-      .findUnique({
-        where: { id },
-      })
-      .catch(() => {
-        throw new Error('cannot find customer');
-      });
-    if (!customer) {
-      throw new NotFoundException('Does not exist');
-    }
-    return customer;
+  async findCustomerById(id: number) {
+    const customer = await this.customerRepository.getCustomerById(id)
+    return customer
   }
 
-  async update(id: number, updateCustomerDto: UpdateCustomerDto) {
-    const customer = await this.prisma.customer
-      .update({
-        where: {
-          id: id,
-        },
-        data: {
-          ...updateCustomerDto,
-        },
-      })
-      .catch(() => {
-        throw new Error('Error creating customer');
-      });
-    if (!customer) {
-      throw new Error('Error creating customer');
-    } else {
-      return customer;
-    }
+  async updateCustomer(id: number, updateCustomerDto: UpdateCustomerDto) {
+    await this.customerRepository.updateCustomer(id, updateCustomerDto)
+    return { message: `Customer with ${id} has been updated` }
   }
 
-  async remove(id: number) {
-    const customer = await this.prisma.customer
-      .findUnique({
-        where: { id },
-      })
-      .catch(() => {
-        throw new Error('Error deleting customer');
-      });
-    if (!customer) {
-      throw new NotFoundException('Patient not found');
-    }
-    await this.prisma.customer.delete({
-      where: { id },
-    });
-    return { data: 'deleted' };
+  async deleteCustomer(id: number) {
+    await this.customerRepository.deleteCustomerById(id)
+    return { message: `Customer with ${id} has been deleted` }
   }
 }

@@ -1,15 +1,22 @@
 {
   "name": "jwt-nest",
   "version": "0.0.1",
-  "description": "",
+  "description": "Something awesome! 🚀",
   "author": "",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
+  "prisma": {
+    "seed": "ts-node prisma/seeds/index.ts"
+  },
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
-    "start:dev": "nest start --watch",
+    "start:dev": "npm run db:setup && nest start --watch",
+    "g:schema": "npx prisma generate --schema=./prisma/schema.prisma",
+    "g:migration": "npx prisma migrate dev --name init --schema=./prisma/schema.prisma",
+    "db:seed": "npx prisma db seed",
+    "db:setup": "npm run g:schema && npm run g:migration && npm run db:seed",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
@@ -70,7 +77,7 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
+    "rootDir": ".",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
