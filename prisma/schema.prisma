@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  email    String  @unique
+  hash     String
+  hashedRt String?
+
+  role Role @default(VISITOR)
+
+  customers    Customer[]
+  appointments Appointment[] @relation("user_appointments")
+
+  @@map("users")
+}
+
+enum Role {
+  ADMIN
+  USER
+  VISITOR
+}
+
+model Customer {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  firstName    String
+  lastName     String
+  phoneNum     String
+  email        String
+  description  String
+  userId       Int?
+  User         User?         @relation(fields: [userId], references: [id])
+  appointments Appointment[] @relation("customer_appointments")
+}
+
+model Appointment {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  startDate   DateTime
+  endDate     DateTime
+  description String
+
+  customerId Int?
+  customer   Customer? @relation("customer_appointments", fields: [customerId], references: [id], onDelete: Cascade)
+  serviceId  Int?
+  service    Service?  @relation("service_appointments", fields: [serviceId], references: [id], onDelete: Cascade)
+  userId     Int?
+  user       User?     @relation("user_appointments", fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Service {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name        String @unique
+  description String
+
+  appointments Appointment[] @relation("service_appointments")
+}
