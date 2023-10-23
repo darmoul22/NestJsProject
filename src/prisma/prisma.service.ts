@@ -1,36 +1,31 @@
-import { PrismaClient } from '.prisma/client';
-import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+// @ts-nocheck
+import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common'
+import { Prisma, PrismaClient } from '@prisma/client'
 
 @Injectable()
 export class PrismaService
-  extends PrismaClient
+  extends PrismaClient<Prisma.PrismaClientOptions, Prisma.LogLevel>
   implements OnModuleInit, OnModuleDestroy
 {
-  constructor(config: ConfigService) {
-    const url = config.get<string>('DATABASE_URL');
+  private readonly logger = new Logger(PrismaService.name)
 
-    super({
-      datasources: {
-        db: {
-          url,
-        },
-      },
-    });
+  constructor() {
+    super({ log: ['warn', 'error'], errorFormat: 'minimal' })
   }
 
   async onModuleInit() {
-    await this.$connect();
+    this.$on('error', ({ message }) => {
+      this.logger.log(`Error: ${message}`)
+    })
+
+    this.$on('warn', ({ message }) => {
+      this.logger.log(`Error: ${message}`)
+    })
+
+    await this.$connect()
   }
 
   async onModuleDestroy() {
-    await this.$disconnect();
-  }
-
-  async cleanDatabase() {
-    if (process.env.NODE_ENV === 'production') return;
-
-    // teardown logic
-    return Promise.all([this.user.deleteMany()]);
+    await this.$disconnect()
   }
 }
