@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { AppointmentService } from './appointment.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
@@ -12,9 +20,31 @@ export class AppointmentController {
     return this.appointmentService.create(createAppointmentDto);
   }
 
-  @Get()
-  findAll() {
-    return this.appointmentService.findAll();
+  @Get('user/:userId')
+  findAllByUserId(@Param('userId') userId: string, @Body() startDate?: Date) {
+    return this.appointmentService.getAppointmentsByUserId(+userId, startDate);
+  }
+
+  @Get('service/:serviceId')
+  findAllByServiceId(
+    @Param('serviceId') serviceId: string,
+    @Body() startDate?: Date,
+  ) {
+    return this.appointmentService.getAppointmentsByServiceId(
+      +serviceId,
+      startDate,
+    );
+  }
+
+  @Get('customer/:customerId')
+  findAllByCustomerId(
+    @Param('customerId') customerId: string,
+    @Body() startDate?: Date,
+  ) {
+    return this.appointmentService.getAppointmentsByCustomerId(
+      +customerId,
+      startDate,
+    );
   }
 
   @Get(':id')
@@ -23,7 +53,10 @@ export class AppointmentController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAppointmentDto: UpdateAppointmentDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateAppointmentDto: UpdateAppointmentDto,
+  ) {
     return this.appointmentService.update(+id, updateAppointmentDto);
   }
 

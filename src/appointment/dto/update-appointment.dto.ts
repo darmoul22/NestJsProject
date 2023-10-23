@@ -20,4 +20,7 @@ export class UpdateAppointmentDto extends PartialType(CreateAppointmentDto) {
 
   @IsInt()
   serviceId: number;
+
+  @IsInt()
+  userId: number;
 }

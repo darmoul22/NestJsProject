@@ -18,4 +18,7 @@ export class CreateAppointmentDto {
 
   @IsInt()
   serviceId: number;
+
+  @IsInt()
+  userId: number;
 }
