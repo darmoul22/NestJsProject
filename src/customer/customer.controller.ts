@@ -8,43 +8,47 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
-} from '@nestjs/common';
-import { CustomerService } from './customer.service';
-import { CreateCustomerDto } from './dto/create-customer.dto';
-import { UpdateCustomerDto } from './dto/update-customer.dto';
-import { GetCurrentUserId } from '../common/decorators';
+} from '@nestjs/common'
+import { CustomerService } from './customer.service'
+import { CreateCustomerDto } from './dto/create-customer.dto'
+import { UpdateCustomerDto } from './dto/update-customer.dto'
+import { GetCurrentUserId, Public } from '../common/decorators'
+import { ParseFinitePositiveIntPipe } from 'src/common/pipes'
+import { CustomerByIdPipe } from './pipes'
+import { Customer } from '@prisma/client'
 
-@Controller('customer')
+@Controller('customers')
 export class CustomerController {
-  constructor(private customerService: CustomerService) {}
+  constructor(private readonly customerService: CustomerService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
   create(@Body() createCustomerDto: CreateCustomerDto) {
-    return this.customerService.create(createCustomerDto);
+    return this.customerService.create(createCustomerDto)
   }
 
-  @Get('user')
+  @Get(':id/users')
   findAllByUser(@GetCurrentUserId() userId: number) {
-    return this.customerService.findAllByUser(userId);
+    return this.customerService.findAllByUser(userId)
   }
 
+  @Public()
   @Get(':id')
-  findOne(@Param('id') id: number) {
-    return this.customerService.findOne(+id);
+  findOne(@Param('id', ParseFinitePositiveIntPipe, CustomerByIdPipe) customer: Customer) {
+    return customer
   }
 
   @Patch(':id')
   update(
-    @Param('id') id: string,
+    @Param('id', ParseFinitePositiveIntPipe) id: number,
     @Body() updateCustomerDto: UpdateCustomerDto,
   ) {
-    return this.customerService.update(+id, updateCustomerDto);
+    return this.customerService.updateCustomer(id, updateCustomerDto)
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.OK)
-  remove(@Param('id') id: string) {
-    return this.customerService.remove(+id);
+  @HttpCode(HttpStatus.NO_CONTENT)
+  remove(@Param('id', ParseFinitePositiveIntPipe) id: number) {
+    return this.customerService.deleteCustomer(id)
   }
 }

@@ -1,19 +1,62 @@
-version: '3'
+version: '3.8'
+
 services:
   db:
+    container_name: db_container
     image: postgres:13
     ports:
       - 5432:5432
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123
+      POSTGRES_PASSWORD: strong-password
       POSTGRES_DB: nestjs
-  test-db:
-    image: postgres:13
-    ports:
-      - 5434:5432
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123
-      POSTGRES_DB: nestjs
+    volumes:
+      - local_pgdata:/var/lib/postgresql/data
+    networks:
+      - my-network
+    restart: unless-stopped
 
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin_container
+    restart: unless-stopped
+    ports:
+      - '8888:80'
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user-name@domain-name.com
+      PGADMIN_DEFAULT_PASSWORD: strong-password
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    networks:
+      - my-network
+
+  backend:
+    container_name: backend_container
+    build:
+      dockerfile: Dockerfile
+      context: .
+      args:
+        NODE_VERSION: '20-alpine'
+        PORT: '9000'
+    volumes:
+      - ./:/home/backend
+      - node_modules_backend:/home/backend/node_modules/
+    ports:
+      - 9000:9000
+    restart: unless-stopped
+    depends_on:
+      - db
+    networks:
+      - my-network
+
+# volumes
+volumes:
+  node_modules_backend: {}
+  local_pgdata: {}
+  pgadmin-data: {}
+
+# networks
+networks:
+  my-network:
+    name: full-project-setup-network
+    external: true
