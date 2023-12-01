@@ -1,5 +1,5 @@
 import { PipeTransform, Injectable, NotFoundException } from '@nestjs/common'
-import { CustomerRepository } from './../customer.repository'
+import { CustomerRepository } from '../customer.repository'
 import { Customer } from '@prisma/client'
 
 @Injectable()

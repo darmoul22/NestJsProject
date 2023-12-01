@@ -9,12 +9,10 @@ export const collectAttributeErrors = (validationErrors: ValidationError[] = [])
     const errPropertyName = validationError.property
     const errConstraints = validationError.constraints
 
-    const errorMessages = Object.keys(errConstraints).map((value, index) => ({
+    accumulator[errPropertyName] = Object.keys(errConstraints).map((value, index) => ({
       id: index + 1,
       message: errConstraints[value],
     }))
-
-    accumulator[errPropertyName] = errorMessages
 
     return accumulator
   }, errObject)

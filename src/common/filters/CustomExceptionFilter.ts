@@ -16,7 +16,6 @@ export class CustomExceptionFilter implements ExceptionFilter {
 
     response.status(status).json({
       status: StatusCodes[status],
-      // @ts-ignore
       message: errorResponse['message'] ?? errorResponse,
       timestamp: gmtTimestamp,
       path: request.url,

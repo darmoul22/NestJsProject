@@ -2,28 +2,16 @@ import { Injectable, NotFoundException } from '@nestjs/common'
 import { CreateServiceDto } from './dto/create-service.dto'
 import { UpdateServiceDto } from './dto/update-service.dto'
 import { PrismaService } from '../prisma/prisma.service'
-import { Prisma } from '@prisma/client'
 
 @Injectable()
 export class ServiceService {
   constructor(private prisma: PrismaService) {}
   async create(createServiceDto: CreateServiceDto) {
-    const service = await this.prisma.service
-      .create({
-        data: {
-          ...createServiceDto,
-        },
-      })
-      .catch((error) => {
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
-          if (error.code === 'P2002') {
-            // Unique constraint violation
-            console.log('Name already exists')
-            console.log(error.meta)
-            // Provide user-friendly error message
-          }
-        } else throw new Error('error')
-      })
+    const service = await this.prisma.service.create({
+      data: {
+        ...createServiceDto,
+      },
+    })
     if (!service) {
       throw new Error('Error creating customer')
     } else {
@@ -42,13 +30,9 @@ export class ServiceService {
   }
 
   async findOne(id: number) {
-    const service = await this.prisma.service
-      .findUnique({
-        where: { id },
-      })
-      .catch((err) => {
-        throw err
-      })
+    const service = await this.prisma.service.findUnique({
+      where: { id },
+    })
     if (!service) {
       throw new NotFoundException('no service')
     }
@@ -56,14 +40,10 @@ export class ServiceService {
   }
 
   async update(id: number, updateServiceDto: UpdateServiceDto) {
-    const service = await this.prisma.service
-      .update({
-        where: { id },
-        data: { ...updateServiceDto },
-      })
-      .catch((err) => {
-        throw err
-      })
+    const service = await this.prisma.service.update({
+      where: { id },
+      data: { ...updateServiceDto },
+    })
     if (!service) {
       throw new NotFoundException('service not found')
     }
@@ -71,13 +51,9 @@ export class ServiceService {
   }
 
   async remove(id: number) {
-    const service = await this.prisma.service
-      .findUnique({
-        where: { id },
-      })
-      .catch((err) => {
-        throw err
-      })
+    const service = await this.prisma.service.findUnique({
+      where: { id },
+    })
     if (!service) {
       throw new NotFoundException('service not found')
     }

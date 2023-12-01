@@ -3,70 +3,41 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
-} from '@nestjs/common';
-import { CreateAppointmentDto } from './dto/create-appointment.dto';
-import { UpdateAppointmentDto } from './dto/update-appointment.dto';
-import { PrismaService } from '../prisma/prisma.service';
+} from '@nestjs/common'
+import { CreateAppointmentDto } from './dto/create-appointment.dto'
+import { UpdateAppointmentDto } from './dto/update-appointment.dto'
+import { PrismaService } from '../prisma/prisma.service'
+import { AppointmentRepository } from './appointment.repository'
+import { subMonths } from 'date-fns'
 
 @Injectable()
 export class AppointmentService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private appointmentRepository: AppointmentRepository,
+  ) {}
 
   async create(createAppointmentDto: CreateAppointmentDto) {
-    await this.checkCustomerAppointmentOverlapBeforeCreate(
-      createAppointmentDto,
-    );
-    await this.checkUserAppointmentOverlapBeforeCreate(createAppointmentDto);
-    await this.checkServiceAppointmentOverlapBeforeCreate(createAppointmentDto);
-    const appointment = await this.prisma.appointment
-      .create({
-        data: {
-          ...createAppointmentDto,
-        },
-      })
-      .catch((err) => {
-        throw err;
-      });
+    await this.checkCustomerAppointmentOverlapBeforeCreate(createAppointmentDto)
+    await this.checkUserAppointmentOverlapBeforeCreate(createAppointmentDto)
+    await this.checkServiceAppointmentOverlapBeforeCreate(createAppointmentDto)
+    const appointment = await this.appointmentRepository.createAppointment(createAppointmentDto)
     if (!appointment) {
-      throw new BadRequestException('error adding appointment');
+      throw new BadRequestException('error adding appointment')
     }
-    return appointment;
+    return appointment
   }
   async getAppointmentsByUserId(userId: number, startDate?: Date) {
-    return await this.prisma.appointment
-      .findMany({
-        where: {
-          userId,
-          startDate: startDate ? { gte: startDate } : undefined,
-        },
-      })
-      .catch((err) => {
-        throw err;
-      });
+    startDate = startDate ? startDate : this.getOneMonthAgoDate()
+    return this.appointmentRepository.getAppointmentsByUserId(userId, startDate)
   }
   async getAppointmentsByServiceId(serviceId: number, startDate?: Date) {
-    return await this.prisma.appointment
-      .findMany({
-        where: {
-          serviceId,
-          startDate: startDate ? { gte: startDate } : undefined,
-        },
-      })
-      .catch((err) => {
-        throw err;
-      });
+    startDate = startDate ? startDate : this.getOneMonthAgoDate()
+    return this.appointmentRepository.getAppointmentsByServiceId(serviceId, startDate)
   }
   async getAppointmentsByCustomerId(customerId: number, startDate?: Date) {
-    return await this.prisma.appointment
-      .findMany({
-        where: {
-          customerId,
-          startDate: startDate ? { gte: startDate } : undefined,
-        },
-      })
-      .catch((err) => {
-        throw err;
-      });
+    startDate = startDate ? startDate : this.getOneMonthAgoDate()
+    return this.appointmentRepository.getAppointmentsByCustomerId(customerId, startDate)
   }
   async findOne(id: number) {
     const appointment = this.prisma.appointment
@@ -74,12 +45,12 @@ export class AppointmentService {
         where: { id },
       })
       .catch((err) => {
-        throw err;
-      });
+        throw err
+      })
     if (!appointment) {
-      throw new NotFoundException('appointment not found');
+      throw new NotFoundException('appointment not found')
     }
-    return appointment;
+    return appointment
   }
 
   async update(id: number, updateAppointmentDto: UpdateAppointmentDto) {
@@ -89,12 +60,12 @@ export class AppointmentService {
         data: { ...updateAppointmentDto },
       })
       .catch((err) => {
-        throw err;
-      });
+        throw err
+      })
     if (!appointment) {
-      throw new Error('Error creating customer');
+      throw new Error('Error creating customer')
     } else {
-      return appointment;
+      return appointment
     }
   }
 
@@ -104,20 +75,18 @@ export class AppointmentService {
         where: { id },
       })
       .catch((err) => {
-        throw err;
-      });
+        throw err
+      })
     if (!appointment) {
-      throw new NotFoundException('appointment not found');
+      throw new NotFoundException('appointment not found')
     }
     await this.prisma.appointment.delete({
       where: { id },
-    });
-    return { data: 'deleted' };
+    })
+    return { data: 'deleted' }
   }
 
-  async checkUserAppointmentOverlapBeforeCreate(
-    newAppointment: CreateAppointmentDto,
-  ) {
+  async checkUserAppointmentOverlapBeforeCreate(newAppointment: CreateAppointmentDto) {
     const overlappingAppointments = await this.prisma.appointment.findMany({
       where: {
         userId: newAppointment.userId,
@@ -126,15 +95,13 @@ export class AppointmentService {
           { endDate: { gte: newAppointment.startDate } },
         ],
       },
-    });
+    })
 
     if (overlappingAppointments.length > 0) {
-      throw new ConflictException('User has overlapping appointments.');
+      throw new ConflictException('User has overlapping appointments.')
     }
   }
-  async checkCustomerAppointmentOverlapBeforeCreate(
-    newAppointment: CreateAppointmentDto,
-  ) {
+  async checkCustomerAppointmentOverlapBeforeCreate(newAppointment: CreateAppointmentDto) {
     const overlappingAppointments = await this.prisma.appointment.findMany({
       where: {
         customerId: newAppointment.customerId,
@@ -143,15 +110,13 @@ export class AppointmentService {
           { endDate: { gte: newAppointment.startDate } },
         ],
       },
-    });
+    })
 
     if (overlappingAppointments.length > 0) {
-      throw new ConflictException('Customer has overlapping appointments.');
+      throw new ConflictException('Customer has overlapping appointments.')
     }
   }
-  async checkServiceAppointmentOverlapBeforeCreate(
-    newAppointment: CreateAppointmentDto,
-  ) {
+  async checkServiceAppointmentOverlapBeforeCreate(newAppointment: CreateAppointmentDto) {
     const overlappingAppointments = await this.prisma.appointment.findMany({
       where: {
         serviceId: newAppointment.serviceId,
@@ -160,10 +125,14 @@ export class AppointmentService {
           { endDate: { gte: newAppointment.startDate } },
         ],
       },
-    });
+    })
 
     if (overlappingAppointments.length > 0) {
-      throw new ConflictException('Service has overlapping appointments.');
+      throw new ConflictException('Service has overlapping appointments.')
     }
+  }
+  getOneMonthAgoDate() {
+    const currentDate = new Date()
+    return subMonths(currentDate, 1)
   }
 }

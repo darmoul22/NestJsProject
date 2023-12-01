@@ -1,6 +1,6 @@
-import { Service } from '@prisma/client'
+import { Service } from '@prisma/client';
 
-type ServiceFactory = Pick<Service, 'name' | 'description'>
+type ServiceFactory = Pick<Service, 'name' | 'description'>;
 
 export const services: ServiceFactory[] = [
   {
@@ -15,4 +15,4 @@ export const services: ServiceFactory[] = [
     name: 'Service 3',
     description: 'Description 3',
   },
-]
+];

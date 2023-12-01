@@ -12,7 +12,7 @@ import {
 import { CustomerService } from './customer.service'
 import { CreateCustomerDto } from './dto/create-customer.dto'
 import { UpdateCustomerDto } from './dto/update-customer.dto'
-import { GetCurrentUserId, Public } from '../common/decorators'
+import { GetCurrentUserId } from '../common/decorators'
 import { ParseFinitePositiveIntPipe } from 'src/common/pipes'
 import { CustomerByIdPipe } from './pipes'
 import { Customer } from '@prisma/client'
@@ -32,9 +32,11 @@ export class CustomerController {
     return this.customerService.findAllByUser(userId)
   }
 
-  @Public()
   @Get(':id')
-  findOne(@Param('id', ParseFinitePositiveIntPipe, CustomerByIdPipe) customer: Customer) {
+  findOne(
+    @Param('id', ParseFinitePositiveIntPipe, CustomerByIdPipe)
+    customer: Customer,
+  ) {
     return customer
   }
 
