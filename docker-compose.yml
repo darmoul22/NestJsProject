@@ -42,7 +42,7 @@ services:
       - ./:/home/backend
       - node_modules_backend:/home/backend/node_modules/
     ports:
-      - "9000:9000"
+      - 9000:9000
     restart: unless-stopped
     depends_on:
       - db

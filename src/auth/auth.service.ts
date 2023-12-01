@@ -1,12 +1,12 @@
-import { ForbiddenException, Injectable } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
-import { JwtService } from '@nestjs/jwt'
-import * as argon from 'argon2'
-import { PrismaService } from '../prisma/prisma.service'
+import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import * as argon from 'argon2';
+import { PrismaService } from '../prisma/prisma.service';
 
-import { AuthDto } from './dto'
-import { JwtPayload, Tokens } from './types'
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
+import { AuthDto } from './dto';
+import { JwtPayload, Tokens } from './types';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class AuthService {
@@ -17,7 +17,7 @@ export class AuthService {
   ) {}
 
   async signupLocal(dto: AuthDto): Promise<Tokens> {
-    const hash = await argon.hash(dto.password)
+    const hash = await argon.hash(dto.password);
 
     const user = await this.prisma.user
       .create({
@@ -29,16 +29,16 @@ export class AuthService {
       .catch((error) => {
         if (error instanceof PrismaClientKnownRequestError) {
           if (error.code === 'P2002') {
-            throw new ForbiddenException('Credentials incorrect')
+            throw new ForbiddenException('Credentials incorrect');
           }
         }
-        throw error
-      })
+        throw error;
+      });
 
-    const tokens = await this.getTokens(user.id, user.email, user.role)
-    await this.updateRtHash(user.id, tokens.refresh_token)
+    const tokens = await this.getTokens(user.id, user.email, user.role);
+    await this.updateRtHash(user.id, tokens.refresh_token);
 
-    return tokens
+    return tokens;
   }
 
   async signinLocal(dto: AuthDto): Promise<Tokens> {
@@ -46,16 +46,16 @@ export class AuthService {
       where: {
         email: dto.email,
       },
-    })
+    });
 
-    if (!user) throw new ForbiddenException('Access Denied')
+    if (!user) throw new ForbiddenException('Access Denied');
 
-    const passwordMatches = await argon.verify(user.hash, dto.password)
-    if (!passwordMatches) throw new ForbiddenException('Access Denied')
-    const tokens = await this.getTokens(user.id, user.email, user.role)
-    await this.updateRtHash(user.id, tokens.refresh_token)
+    const passwordMatches = await argon.verify(user.hash, dto.password);
+    if (!passwordMatches) throw new ForbiddenException('Access Denied');
+    const tokens = await this.getTokens(user.id, user.email, user.role);
+    await this.updateRtHash(user.id, tokens.refresh_token);
 
-    return tokens
+    return tokens;
   }
 
   async logout(userId: number): Promise<boolean> {
@@ -69,8 +69,8 @@ export class AuthService {
       data: {
         hashedRt: null,
       },
-    })
-    return true
+    });
+    return true;
   }
 
   async refreshTokens(userId: number, rt: string): Promise<Tokens> {
@@ -78,20 +78,20 @@ export class AuthService {
       where: {
         id: userId,
       },
-    })
-    if (!user?.hashedRt) throw new ForbiddenException('Access Denied')
+    });
+    if (!user?.hashedRt) throw new ForbiddenException('Access Denied');
 
-    const rtMatches = await argon.verify(user.hashedRt, rt)
-    if (!rtMatches) throw new ForbiddenException('Access Denied')
+    const rtMatches = await argon.verify(user.hashedRt, rt);
+    if (!rtMatches) throw new ForbiddenException('Access Denied');
 
-    const tokens = await this.getTokens(user.id, user.email, user.role)
-    await this.updateRtHash(user.id, tokens.refresh_token)
+    const tokens = await this.getTokens(user.id, user.email, user.role);
+    await this.updateRtHash(user.id, tokens.refresh_token);
 
-    return tokens
+    return tokens;
   }
 
   async updateRtHash(userId: number, rt: string): Promise<void> {
-    const hash = await argon.hash(rt)
+    const hash = await argon.hash(rt);
     await this.prisma.user.update({
       where: {
         id: userId,
@@ -99,15 +99,19 @@ export class AuthService {
       data: {
         hashedRt: hash,
       },
-    })
+    });
   }
 
-  async getTokens(userId: number, email: string, role: string): Promise<Tokens> {
+  async getTokens(
+    userId: number,
+    email: string,
+    role: string,
+  ): Promise<Tokens> {
     const jwtPayload: JwtPayload = {
       sub: userId,
       email: email,
       role: role,
-    }
+    };
 
     const [at, rt] = await Promise.all([
       this.jwtService.signAsync(jwtPayload, {
@@ -118,11 +122,11 @@ export class AuthService {
         secret: this.config.get<string>('RT_SECRET'),
         expiresIn: '7d',
       }),
-    ])
+    ]);
 
     return {
       access_token: at,
       refresh_token: rt,
-    }
+    };
   }
 }

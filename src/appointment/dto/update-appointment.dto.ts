@@ -1,26 +1,26 @@
-import { PartialType } from '@nestjs/swagger'
-import { CreateAppointmentDto } from './create-appointment.dto'
-import { IsDateString, IsInt, IsNotEmpty, IsString } from 'class-validator'
+import { PartialType } from '@nestjs/swagger';
+import { CreateAppointmentDto } from './create-appointment.dto';
+import { IsDateString, IsInt, IsNotEmpty, IsString } from 'class-validator';
 
 export class UpdateAppointmentDto extends PartialType(CreateAppointmentDto) {
   @IsDateString()
   @IsNotEmpty()
-  startDate: Date
+  startDate: Date;
 
   @IsDateString()
   @IsNotEmpty()
-  endDate: Date
+  endDate: Date;
 
   @IsString()
   @IsNotEmpty()
-  description: string
+  description: string;
 
   @IsInt()
-  customerId: number
+  customerId: number;
 
   @IsInt()
-  serviceId: number
+  serviceId: number;
 
   @IsInt()
-  userId: number
+  userId: number;
 }

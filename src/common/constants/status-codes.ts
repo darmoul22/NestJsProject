@@ -1,4 +1,4 @@
-type StatusCodesRecord = Record<number, string>
+type StatusCodesRecord = Record<number, string>;
 
 export const StatusCodes: StatusCodesRecord = {
   100: 'CONTINUE',
@@ -59,4 +59,4 @@ export const StatusCodes: StatusCodesRecord = {
   505: 'HTTP_VERSION_NOT_SUPPORTED',
   507: 'INSUFFICIENT_STORAGE',
   511: 'NETWORK_AUTHENTICATION_REQUIRED',
-}
+};
