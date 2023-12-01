@@ -1,5 +1,5 @@
-import { APP_FILTER } from '@nestjs/core'
-import { CustomExceptionFilter, PrismaClientExceptionFilter } from '../filters'
+import { APP_FILTER } from '@nestjs/core';
+import { CustomExceptionFilter, PrismaClientExceptionFilter } from '../filters';
 
 export const filters = [
   {
@@ -10,4 +10,4 @@ export const filters = [
     provide: APP_FILTER,
     useClass: CustomExceptionFilter,
   },
-]
+];

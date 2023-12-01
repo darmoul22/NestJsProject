@@ -13,31 +13,31 @@ export class UpdateCustomerDto {
   @IsString()
   @ValidateIf((o) => o.firstName !== undefined)
   @IsNotEmpty()
-  firstName: string
+  firstName: string;
 
   @IsOptional()
   @IsString()
   @ValidateIf((o) => o.lastName !== undefined)
   @IsNotEmpty()
-  lastName: string
+  lastName: string;
 
   @IsOptional()
   @IsNumberString()
   @ValidateIf((o) => o.phoneNum !== undefined)
-  phoneNum: string
+  phoneNum: string;
 
   @IsOptional()
   @ValidateIf((o) => o.email !== undefined)
   @IsEmail()
-  email: string
+  email: string;
 
   @IsOptional()
   @IsString()
   @ValidateIf((o) => o.description !== undefined)
-  description: string
+  description: string;
 
   @IsNotEmpty()
   @ValidateIf((o) => o.userId !== undefined)
   @IsNumber()
-  userId: number
+  userId: number;
 }

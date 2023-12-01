@@ -8,18 +8,15 @@ export class CustomerService {
   constructor(private readonly customerRepository: CustomerRepository) {}
 
   async create(createCustomerDto: CreateCustomerDto) {
-    const customer = await this.customerRepository.createCustomer(createCustomerDto)
-    return customer
+    return this.customerRepository.createCustomer(createCustomerDto)
   }
 
   async findAllByUser(userId: number) {
-    const customers = await this.customerRepository.getCustomersByUserId(userId)
-    return customers
+    return this.customerRepository.getCustomersByUserId(userId)
   }
 
   async findCustomerById(id: number) {
-    const customer = await this.customerRepository.getCustomerById(id)
-    return customer
+    return this.customerRepository.getCustomerById(id)
   }
 
   async updateCustomer(id: number, updateCustomerDto: UpdateCustomerDto) {

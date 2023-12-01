@@ -5,7 +5,7 @@ services:
     container_name: db_container
     image: postgres:13
     ports:
-      - 5432:5432
+      - "5434:5434"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: strong-password
@@ -42,7 +42,7 @@ services:
       - ./:/home/backend
       - node_modules_backend:/home/backend/node_modules/
     ports:
-      - 9000:9000
+      - "9000:9000"
     restart: unless-stopped
     depends_on:
       - db
