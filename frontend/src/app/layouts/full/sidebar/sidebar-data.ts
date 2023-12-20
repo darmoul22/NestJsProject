@@ -8,6 +8,16 @@ export const navItems: NavItem[] = [
     displayName: 'Dashboard',
     iconName: 'layout-dashboard',
     route: '/dashboard',
+
+  },
+  {
+    navCap: 'Clients',
+  },
+  {
+    displayName: 'Clients List',
+    iconName: 'layout-dashboard',
+    route: '/dashboard',
+
   },
   {
     navCap: 'Ui Components',

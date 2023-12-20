@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule } from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -24,6 +24,12 @@ import { SidebarComponent } from './layouts/full/sidebar/sidebar.component';
 import { HeaderComponent } from './layouts/full/header/header.component';
 import { BrandingComponent } from './layouts/full/sidebar/branding.component';
 import { AppNavItemComponent } from './layouts/full/sidebar/nav-item/nav-item.component';
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
+import {appReducers} from "./store/app.reducer";
+import {AuthEffects} from "./pages/authentication/auth-store/auth.effects";
+import {StoreDevtoolsModule} from "@ngrx/store-devtools";
+import {JwtInterceptor} from "./core/interceptors/jwt.interceptor";
 
 @NgModule({
   declarations: [
@@ -45,8 +51,21 @@ import { AppNavItemComponent } from './layouts/full/sidebar/nav-item/nav-item.co
     MaterialModule,
     TablerIconsModule.pick(TablerIcons),
     NgScrollbarModule,
+    StoreModule.forRoot(appReducers),
+    EffectsModule.forRoot([AuthEffects]),
+    StoreDevtoolsModule.instrument({
+      maxAge: 25, // Retains last 25 states
+      //logOnly: environment.production, // Restrict extension to log-only mode in production
+    }),
   ],
   exports: [TablerIconsModule],
   bootstrap: [AppComponent],
+  providers:[
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: JwtInterceptor,
+      multi: true
+    }
+  ]
 })
 export class AppModule {}

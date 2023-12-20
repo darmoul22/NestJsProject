@@ -6,6 +6,8 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import {Store} from "@ngrx/store";
+import {logout} from "../../../pages/authentication/auth-store/auth.actions";
 
 
 @Component({
@@ -22,5 +24,10 @@ export class HeaderComponent {
 
   showFiller = false;
 
-  constructor(public dialog: MatDialog) {}
+  constructor(public dialog: MatDialog,
+              private store:Store) {}
+
+  logout() {
+    this.store.dispatch(logout());
+  }
 }
