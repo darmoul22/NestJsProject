@@ -1,6 +1,6 @@
 {
   "name": "jwt-nest",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Something awesome! 🚀",
   "author": "",
   "private": true,
@@ -10,7 +10,7 @@
   },
   "scripts": {
     "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "g:schema": "npx prisma generate --schema=./prisma/schema.prisma",

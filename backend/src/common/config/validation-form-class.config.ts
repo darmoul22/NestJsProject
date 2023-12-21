@@ -1,11 +1,17 @@
-import { BadRequestException, ValidationError } from '@nestjs/common'
+import {
+  BadRequestException,
+  HttpStatus,
+  ValidationError,
+  ValidationPipeOptions,
+} from '@nestjs/common'
 import { collectAttributeErrors } from '../utils/validation-form-class.util'
 
-export const validationPipeOptions = {
+export const validationPipeOptions: ValidationPipeOptions = {
   transform: true,
   transformOptions: { enableImplicitConversion: true },
-  exceptionFactory: (validationErrors: ValidationError[] = []) => {
+  exceptionFactory: (validationErrors: ValidationError[] = []): BadRequestException => {
     const errObject = collectAttributeErrors(validationErrors)
     return new BadRequestException(errObject)
   },
+  errorHttpStatusCode: HttpStatus.BAD_REQUEST,
 }

@@ -4,8 +4,8 @@ import { JwtService } from '@nestjs/jwt'
 import * as argon from 'argon2'
 import { PrismaService } from '../prisma/prisma.service'
 
-import { AuthDto } from './dto'
-import { JwtPayload, Tokens } from './types'
+import { SingnInDto, SingnUpDto } from './dto'
+import type { JwtPayload, Tokens } from './types'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 
 @Injectable()
@@ -16,7 +16,7 @@ export class AuthService {
     private config: ConfigService,
   ) {}
 
-  async signupLocal(dto: AuthDto): Promise<Tokens> {
+  async signupLocal(dto: SingnUpDto): Promise<Tokens> {
     const hash = await argon.hash(dto.password)
 
     const user = await this.prisma.user
@@ -41,7 +41,7 @@ export class AuthService {
     return tokens
   }
 
-  async signinLocal(dto: AuthDto): Promise<Tokens> {
+  async signinLocal(dto: SingnInDto): Promise<Tokens> {
     const user = await this.prisma.user.findUnique({
       where: {
         email: dto.email,

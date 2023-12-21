@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common'
 import { Prisma, PrismaClient } from '@prisma/client'
 
