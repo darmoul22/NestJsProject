@@ -11,8 +11,8 @@ import { guards } from './common/config/guards.config'
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    AuthModule,
     PrismaModule,
+    AuthModule,
     CustomerModule,
     ServiceModule,
     AppointmentModule,
