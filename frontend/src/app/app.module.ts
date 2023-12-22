@@ -30,6 +30,7 @@ import {appReducers} from "./store/app.reducer";
 import {AuthEffects} from "./pages/authentication/auth-store/auth.effects";
 import {StoreDevtoolsModule} from "@ngrx/store-devtools";
 import {JwtInterceptor} from "./core/interceptors/jwt.interceptor";
+import {authReducer} from "./pages/authentication/auth-store/auth.reducer";
 
 @NgModule({
   declarations: [
@@ -52,6 +53,7 @@ import {JwtInterceptor} from "./core/interceptors/jwt.interceptor";
     TablerIconsModule.pick(TablerIcons),
     NgScrollbarModule,
     StoreModule.forRoot(appReducers),
+    StoreModule.forFeature('AUTH', authReducer),
     EffectsModule.forRoot([AuthEffects]),
     StoreDevtoolsModule.instrument({
       maxAge: 25, // Retains last 25 states

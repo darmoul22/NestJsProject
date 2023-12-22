@@ -23,4 +23,14 @@ export class AuthService {
   refreshAccessToken(refreshToken: string | null): Observable<TokensType>{
     return this.httpClient.post<TokensType>(this.api_url+ 'refresh',refreshToken);
   }
+  setTokensInLocalStorage(tokens: TokensType){
+    localStorage.setItem('Tokens', JSON.stringify(tokens));
+  }
+  getTokensFromLocalStorage(){
+    const tokens = localStorage.getItem('Tokens');
+    return tokens ? JSON.parse(tokens) : null;
+  }
+  clearTokensFromLocalStorage(){
+    localStorage.removeItem('Tokens');
+  }
 }

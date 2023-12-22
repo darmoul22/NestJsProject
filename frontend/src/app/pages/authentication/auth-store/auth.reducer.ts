@@ -1,6 +1,7 @@
 import {AuthState} from "./auth.state";
 import {createReducer, on} from "@ngrx/store";
 import {
+  initializeTokensFromLocalStorageSuccess,
   login,
   loginFailure,
   loginSuccess,
@@ -40,5 +41,12 @@ export const authReducer = createReducer(
     refresh_token: null,
     error,
   })),
-  on(logoutSuccess,loginFailure, () => initialAuthState)
+  on(logoutSuccess,loginFailure, () => initialAuthState),
+  on(initializeTokensFromLocalStorageSuccess, (state, { access_token, refresh_token }) => ({
+    ...state,
+    access_token,
+    refresh_token,
+    error: null,
+  })),
+
 );
