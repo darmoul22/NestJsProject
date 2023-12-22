@@ -1,8 +1,8 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, UseFilters, UseGuards } from '@nestjs/common'
+import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common'
 
 import { Public, GetCurrentUserId, GetCurrentUser } from '../common/decorators'
 import { RtGuard } from '../common/guards'
-import { AuthService } from './auth.service'
+import { AuthService } from './service/auth.service'
 import { SingnInDto, SingnUpDto } from './dto'
 import type { Tokens } from './types'
 
@@ -25,9 +25,9 @@ export class AuthController {
   }
 
   @Post('logout')
-  @HttpCode(HttpStatus.OK)
-  logout(@GetCurrentUserId() userId: number): Promise<boolean> {
-    return this.authService.logout(userId)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  logout(@GetCurrentUserId() userId: number) {
+    this.authService.logout(userId)
   }
 
   @Public()
