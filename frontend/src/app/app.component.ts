@@ -1,17 +1,12 @@
-import {Component, OnInit} from '@angular/core';
-import {Store} from "@ngrx/store";
-import {initializeTokensFromLocalStorage} from "./pages/authentication/auth-store/auth.actions";
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
 })
-export class AppComponent implements  OnInit {
-  constructor(private store: Store) {
+export class AppComponent {
+  constructor() {
   }
-  title = 'Spike Angular Admin Tempplate';
+  title = 'Spike Angular Admin Template';
 
-  ngOnInit(): void {
-     //this.store.dispatch(AppinitializeTokensFromLocalStorage());
-  }
 }

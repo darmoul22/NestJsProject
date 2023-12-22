@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 import {Actions, createEffect, ofType} from "@ngrx/effects";
 import {
-  initializeTokensFromLocalStorage, initializeTokensFromLocalStorageSuccess,
   login,
   loginFailure,
   loginSuccess,
@@ -19,23 +18,11 @@ import {selectRefreshToken} from "./auth.selectors";
 
 @Injectable()
 export class AuthEffects {
-  initializeTokens$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(initializeTokensFromLocalStorage),
-      tap(() => {
-        console.log('initial')
-        const tokens = this.authService.getTokensFromLocalStorage() ;
-        tokens ? this.store.dispatch(initializeTokensFromLocalStorageSuccess(tokens))
-          : this.authService.clearTokensFromLocalStorage();
-      }),
-    ),
-  );
   login$ = createEffect(() =>
     this.actions$.pipe(
       ofType(login),
       mergeMap(({ credentials }) =>
         this.authService.login(credentials).pipe(
-          tap((tokens: TokensType) => this.authService.setTokensInLocalStorage(tokens)),
           map(( result: TokensType ) => loginSuccess({ access_token:result.access_token, refresh_token: result.refresh_token })),
           catchError((error) => of(loginFailure({ error: 'Login failed' })))
         )
@@ -57,7 +44,6 @@ export class AuthEffects {
       withLatestFrom(this.store.pipe(select(selectRefreshToken))), // Combine with the current refresh token from the store
       mergeMap(([action, refresh_token]) =>
         this.authService.refreshAccessToken(refresh_token).pipe(
-          tap((tokens: TokensType) => this.authService.setTokensInLocalStorage(tokens)),
           map((tokens) => refreshAccessTokenSuccess({ access_token: tokens.access_token })),
           catchError((error) => of(refreshAccessTokenFailure({ error: 'Failed to refresh access token' })))
         )
@@ -99,5 +85,7 @@ export class AuthEffects {
     { dispatch: false }
   );
 
-  constructor(private actions$: Actions, private router: Router, private authService: AuthService,private store:Store) {}
+  constructor(private actions$: Actions, private router: Router, private authService: AuthService,private store:Store) {
+    console.log('construct')
+  }
 }
