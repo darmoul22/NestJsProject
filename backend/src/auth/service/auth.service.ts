@@ -6,6 +6,7 @@ import type { Tokens, UserPayload } from '../types'
 import { HASHING_SERVICE, IHashingService } from 'src/iam/hashing/hashing.interface'
 import { AuthRepository } from '../repository/auth.repository'
 import { TokenManager } from 'src/iam/token-manager/token-manager.service'
+import { ConfigKey, TokenConfigType } from 'src/common/config/env/app.config'
 
 @Injectable()
 export class AuthService {
@@ -33,7 +34,7 @@ export class AuthService {
       hash,
     })
 
-    // Generate tokens
+    // Get user payload
     const payload = this.getUserPayload(user)
 
     // Generate tokens
@@ -67,17 +68,17 @@ export class AuthService {
     return tokens
   }
 
-  logout(userId: number) {
+  async logout(userId: number) {
     // Invalidate refresh token hash in db (set to null) if it exists (not null)
-    this.authRepository.invalidateRt(userId).catch(() => {
-      throw new ForbiddenException('Access token has already been invalidated')
+    await this.authRepository.invalidateRt(userId).catch(() => {
+      throw new ForbiddenException('Access Denied')
     })
   }
 
   async refreshTokens(userId: number, rt: string): Promise<Tokens> {
     // Get user by id
     const user = await this.authRepository.getUserById(userId)
-    if (!user || !user?.hashedRt) throw new ForbiddenException('Access Denied')
+    if (!user?.hashedRt) throw new ForbiddenException('Access Denied')
 
     // Check if refresh token matches
     const rtMatches = await this.hashingService.compareHashPayload(user.hashedRt, rt)
@@ -102,8 +103,16 @@ export class AuthService {
 
   async getTokens(payload: UserPayload): Promise<Tokens> {
     const [access_token, refresh_token] = await Promise.all([
-      this.tokenManager.generateToken(payload, this.config.get<string>('AT_SECRET'), '15m'),
-      this.tokenManager.generateToken(payload, this.config.get<string>('RT_SECRET'), '1d'),
+      this.tokenManager.generateToken(
+        payload,
+        this.config.get<TokenConfigType>(ConfigKey.TOKEN).access_token,
+        this.config.get<TokenConfigType>(ConfigKey.TOKEN).access_token_expires_in,
+      ),
+      this.tokenManager.generateToken(
+        payload,
+        this.config.get<TokenConfigType>(ConfigKey.TOKEN).refresh_token,
+        this.config.get<TokenConfigType>(ConfigKey.TOKEN).refresh_token_expires_in,
+      ),
     ])
 
     return {

@@ -6,7 +6,7 @@ import {
 
 @ValidatorConstraint({ name: 'RequireUppercaseValidator', async: false })
 export class RequireUppercaseValidator implements ValidatorConstraintInterface {
-  validate(value: any, _args: ValidationArguments) {
+  validate(value: any) {
     const requireUppercaseRegex = /[A-Z]/
     return requireUppercaseRegex.test(value)
   }

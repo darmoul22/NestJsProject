@@ -6,7 +6,7 @@ import {
 
 @ValidatorConstraint({ name: 'RequireLowercaseValidator', async: false })
 export class RequireLowercaseValidator implements ValidatorConstraintInterface {
-  validate(value: any, _args: ValidationArguments) {
+  validate(value: any) {
     const lowercaseRegex = /[a-z]/
     return lowercaseRegex.test(value)
   }

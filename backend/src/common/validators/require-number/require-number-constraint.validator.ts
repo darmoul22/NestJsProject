@@ -6,7 +6,7 @@ import {
 
 @ValidatorConstraint({ name: 'RequireNumbersValidator', async: false })
 export class RequireNumbersValidator implements ValidatorConstraintInterface {
-  validate(value: any, _args: ValidationArguments) {
+  validate(value: any) {
     const requireNumbersRegex = /\d/
     return requireNumbersRegex.test(value)
   }
