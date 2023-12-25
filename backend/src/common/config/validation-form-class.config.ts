@@ -14,4 +14,6 @@ export const validationPipeOptions: ValidationPipeOptions = {
     return new BadRequestException(errObject)
   },
   errorHttpStatusCode: HttpStatus.BAD_REQUEST,
+  whitelist: true,
+  forbidNonWhitelisted: true,
 }

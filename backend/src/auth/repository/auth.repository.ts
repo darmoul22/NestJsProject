@@ -41,10 +41,10 @@ export class AuthRepository {
     })
   }
 
-  updateRtHash(id: number, hashedRt: string) {
+  updateRtHash(authId: number, hashedRt: string) {
     return this.prisma.user.update({
       where: {
-        id,
+        id: authId,
       },
       data: {
         hashedRt,
@@ -52,10 +52,10 @@ export class AuthRepository {
     })
   }
 
-  invalidateRt(id: number) {
+  invalidateRt(authId: number) {
     return this.prisma.user.update({
       where: {
-        id,
+        id: authId,
         hashedRt: {
           not: null,
         },

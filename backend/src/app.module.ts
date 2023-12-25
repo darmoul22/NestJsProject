@@ -7,10 +7,12 @@ import { ServiceModule } from './service/service.module'
 import { AppointmentModule } from './appointment/appointment.module'
 import { filters } from './common/config/filters.config'
 import { guards } from './common/config/guards.config'
+import { validateConfig } from './common/config/env/config-validation'
+import { configurations } from './common/config/env/app.config'
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ isGlobal: true, validate: validateConfig, load: configurations }),
     PrismaModule,
     AuthModule,
     CustomerModule,

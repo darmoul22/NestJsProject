@@ -8,11 +8,12 @@ import { validationPipeOptions } from './common/config/validation-form-class.con
 import { SwaggerModule } from '@nestjs/swagger'
 import { swaggerConfig } from './common/config/swagger.config'
 import { useContainer } from 'class-validator'
+import { ConfigKey, type AppConfigType } from './common/config/env/app.config'
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule)
   const config: ConfigService = app.get(ConfigService)
-  const port = config.get<number>('BACK_END_HOST_PORT') || 9000
+  const port = config.get<AppConfigType>(ConfigKey.APP).port
 
   app.useGlobalPipes(new ValidationPipe(validationPipeOptions))
   app.disable('x-powered-by')
@@ -21,9 +22,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, swaggerConfig)
   SwaggerModule.setup('api', app, document)
 
-  // This will cause class-validator to use the nestJS module resolution,
-  // the fallback option is to spare our selfs from importing all the class-validator modules to nestJS
-  // https://github.com/nestjs/nest/issues/528
   useContainer(app.select(AppModule), { fallbackOnErrors: true })
   await app.listen(port)
 }

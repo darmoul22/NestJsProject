@@ -6,7 +6,7 @@ import {
 
 @ValidatorConstraint({ name: 'RequireSpecialCharsValidator', async: false })
 export class RequireSpecialCharsValidator implements ValidatorConstraintInterface {
-  validate(value: any, _args: ValidationArguments) {
+  validate(value: any) {
     const requireSpecialCharsRegex = /[!@#$%^&*(),.?":{}|<>]/
     return requireSpecialCharsRegex.test(value)
   }

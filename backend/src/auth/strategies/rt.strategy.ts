@@ -5,13 +5,14 @@ import { ForbiddenException, Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import type { JwtPayloadWithRt, UserPayload } from '../types'
 import { REFRESH_TOKEN } from 'src/common/constants/guard'
+import { ConfigKey, type TokenConfigType } from 'src/common/config/env/app.config'
 
 @Injectable()
 export class RtStrategy extends PassportStrategy(Strategy, REFRESH_TOKEN) {
   constructor(config: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: config.get<string>('RT_SECRET'),
+      secretOrKey: config.get<TokenConfigType>(ConfigKey.TOKEN).refresh_token,
       passReqToCallback: true,
     })
   }
