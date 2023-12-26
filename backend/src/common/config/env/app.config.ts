@@ -1,11 +1,13 @@
 import { registerAs } from '@nestjs/config'
+import process from "process";
 
-type ConfigKeyType = 'APP' | 'DB' | 'TOKEN'
+type ConfigKeyType = 'APP' | 'DB' | 'TOKEN' | 'FIRE_BASE'
 
 export const ConfigKey: Record<ConfigKeyType, string> = {
   APP: 'app',
   DB: 'db',
   TOKEN: 'token',
+  FIRE_BASE: 'firebase'
 }
 
 export enum Environment {
@@ -35,8 +37,17 @@ const TokenConfig = registerAs(ConfigKey.TOKEN, () => ({
   refresh_token_expires_in: process.env.RT_EXPIRES_IN,
 }))
 
-export const configurations = [APPConfig, TokenConfig, DBConfig]
+const FirebaseConfig = registerAs(ConfigKey.FIRE_BASE, () => ({
+  apiKey: process.env.API_KEY,
+  authDomain: process.env.AUTH_DOMAIN,
+  projectId: process.env.PROJECT_ID,
+  storageBucket: process.env.STORAGE_BUCKET,
+  messagingSenderId: process.env.MESAGING_SENDER_ID,
+  appId: process.env.APP_ID,
+}))
+export const configurations = [APPConfig, TokenConfig, DBConfig, FirebaseConfig]
 
 export type AppConfigType = ReturnType<typeof APPConfig>
 export type DBConfigType = ReturnType<typeof DBConfig>
 export type TokenConfigType = ReturnType<typeof TokenConfig>
+export type FirebaseConfigType = ReturnType<typeof FirebaseConfig>
