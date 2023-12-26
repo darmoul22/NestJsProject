@@ -1,4 +1,4 @@
-import { ExecutionContext, Injectable } from '@nestjs/common'
+import {ExecutionContext, Injectable, UnauthorizedException} from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
 import { AuthGuard } from '@nestjs/passport'
 import { ACCESS_TOKEN } from '../constants/guard'
@@ -17,6 +17,10 @@ export class AtGuard extends AuthGuard(ACCESS_TOKEN) {
 
     if (isPublic) return true
 
-    return super.canActivate(context)
+    const result =  super.canActivate(context)
+        if (!result){
+          throw new UnauthorizedException('Invalid or expired token');
+        }
+        return result;
   }
 }
