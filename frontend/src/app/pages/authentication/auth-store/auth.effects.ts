@@ -71,10 +71,12 @@ export class AuthEffects {
             ),
             tap(() => {
               this.store.dispatch(logoutSuccess())
+              this.authService.clearTokensFromLocalStorage();
               this.router.navigate(['/authentication/login']); // Redirect to the login page after logout
             }),
             catchError(() => {
               this.store.dispatch(logoutFailure())
+              this.authService.clearTokensFromLocalStorage();
               this.router.navigate(['/authentication/login']);
               return EMPTY;
             })
@@ -82,5 +84,8 @@ export class AuthEffects {
       ),
     { dispatch: false }
   );
-  constructor(private actions$: Actions, private router: Router, private authService: AuthService,private store:Store) {}
+
+  constructor(private actions$: Actions, private router: Router, private authService: AuthService,private store:Store) {
+    console.log('construct')
+  }
 }

@@ -24,12 +24,13 @@ import { SidebarComponent } from './layouts/full/sidebar/sidebar.component';
 import { HeaderComponent } from './layouts/full/header/header.component';
 import { BrandingComponent } from './layouts/full/sidebar/branding.component';
 import { AppNavItemComponent } from './layouts/full/sidebar/nav-item/nav-item.component';
-import { StoreModule } from '@ngrx/store';
+import {META_REDUCERS, StoreModule} from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import {appReducers} from "./store/app.reducer";
 import {AuthEffects} from "./pages/authentication/auth-store/auth.effects";
 import {StoreDevtoolsModule} from "@ngrx/store-devtools";
 import {JwtInterceptor} from "./core/interceptors/jwt.interceptor";
+import {localStorageSyncReducer} from "./store/localStorage-sync.reducer";
 
 @NgModule({
   declarations: [
@@ -51,7 +52,9 @@ import {JwtInterceptor} from "./core/interceptors/jwt.interceptor";
     MaterialModule,
     TablerIconsModule.pick(TablerIcons),
     NgScrollbarModule,
-    StoreModule.forRoot(appReducers),
+    StoreModule.forRoot(appReducers,{
+      metaReducers: [localStorageSyncReducer],
+    }),
     EffectsModule.forRoot([AuthEffects]),
     StoreDevtoolsModule.instrument({
       maxAge: 25, // Retains last 25 states
@@ -62,10 +65,15 @@ import {JwtInterceptor} from "./core/interceptors/jwt.interceptor";
   bootstrap: [AppComponent],
   providers:[
     {
+      provide: META_REDUCERS,
+      useValue: localStorageSyncReducer,
+      multi: true,
+    },
+    {
       provide: HTTP_INTERCEPTORS,
       useClass: JwtInterceptor,
       multi: true
-    }
+    },
   ]
 })
 export class AppModule {}
