@@ -9,6 +9,7 @@ import { filters } from './common/config/filters.config'
 import { guards } from './common/config/guards.config'
 import { validateConfig } from './common/config/env/config-validation'
 import { configurations } from './common/config/env/app.config'
+import { SomethingModule } from './something/something.module'
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { configurations } from './common/config/env/app.config'
     CustomerModule,
     ServiceModule,
     AppointmentModule,
+    SomethingModule,
   ],
   providers: [...guards, ...filters],
 })
