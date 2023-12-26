@@ -43,6 +43,11 @@ const routes: Routes = [
         loadChildren: () =>
           import('./pages/extra/extra.module').then((m) => m.ExtraModule),
       },
+      {
+        path: 'services',
+        loadChildren: () =>
+          import('./pages/service/service.module').then((m) => m.ServiceModule),
+      },
     ],
   },
 ];

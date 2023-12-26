@@ -11,12 +11,12 @@ export const navItems: NavItem[] = [
 
   },
   {
-    navCap: 'Clients',
+    navCap: 'Services',
   },
   {
-    displayName: 'Clients List',
+    displayName: 'Services List',
     iconName: 'layout-dashboard',
-    route: '/dashboard',
+    route: '/services',
 
   },
   {
