@@ -1,11 +1,12 @@
 import { registerAs } from '@nestjs/config'
 
-type ConfigKeyType = 'APP' | 'DB' | 'TOKEN'
+type ConfigKeyType = 'APP' | 'DB' | 'TOKEN' | 'STORAGE'
 
 export const ConfigKey: Record<ConfigKeyType, string> = {
   APP: 'app',
   DB: 'db',
   TOKEN: 'token',
+  STORAGE: "storage"
 }
 
 export enum Environment {
@@ -15,7 +16,7 @@ export enum Environment {
 }
 
 const APPConfig = registerAs(ConfigKey.APP, () => ({
-  env: Environment[process.env.NODE_ENV as keyof typeof Environment] || Environment.DEVELOPMENT,
+  env: "development",
   port: Number(process.env.APP_PORT),
   front_end_url: process.env.FRONT_END_URL,
 }))
@@ -35,8 +36,19 @@ const TokenConfig = registerAs(ConfigKey.TOKEN, () => ({
   refresh_token_expires_in: process.env.RT_EXPIRES_IN,
 }))
 
-export const configurations = [APPConfig, TokenConfig, DBConfig]
+const FirebaseConfig  = registerAs(ConfigKey.STORAGE, () => ({
+  apiKey: process.env.API_KEY,
+  authDomain: process.env.AUTH_DOMAIN,
+  projectId: process.env.PROJECT_ID,
+  storageBucket: process.env.STORAGE_BUCKET,
+  messagingSenderId: process.env.MESSAGING_SENDER_ID,
+  appId: process.env.APP_ID,
+}))
+
+export const configurations = [APPConfig, TokenConfig, DBConfig, FirebaseConfig]
 
 export type AppConfigType = ReturnType<typeof APPConfig>
 export type DBConfigType = ReturnType<typeof DBConfig>
 export type TokenConfigType = ReturnType<typeof TokenConfig>
+export type StorageConfigType = ReturnType<typeof FirebaseConfig>
+
