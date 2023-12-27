@@ -13,13 +13,12 @@ export class AppSideLoginComponent implements OnInit{
   error$ = this.store.select(selectAuthError);
   loginForm !: FormGroup;
   constructor(private fb: FormBuilder,
-              private userService: UserService,
               private store: Store
   ) {}
   ngOnInit() {
     this.loginForm = this.fb.group({
-      email: ['', Validators.required],
-      password: ['', Validators.required]
+      email: ['',[ Validators.required , Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(8)]]
     });
   }
   login(){

@@ -1,30 +1,22 @@
 import { Injectable } from "@angular/core";
 import {Actions, createEffect, ofType} from "@ngrx/effects";
-import {
-  login,
-  loginFailure,
-  loginSuccess,
-  logout, logoutFailure, logoutSuccess,
-  refreshAccessToken,
-  refreshAccessTokenFailure,
-  refreshAccessTokenSuccess
-} from "./auth.actions";
 import {catchError, delay, EMPTY, map, mergeMap, of, retryWhen, take, tap, throwError, withLatestFrom} from "rxjs";
 import {Router} from "@angular/router";
 import {AuthService} from "../../../core/services/auth.service";
 import {TokensType} from "../../../core/types/tokens.type";
 import {select, Store} from "@ngrx/store";
 import {selectRefreshToken} from "./auth.selectors";
+import { AuthActions } from ".";
 
 @Injectable()
 export class AuthEffects {
   login$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(login),
+      ofType(AuthActions.login),
       mergeMap(({ credentials }) =>
         this.authService.login(credentials).pipe(
-          map(( result: TokensType ) => loginSuccess({ access_token:result.access_token, refresh_token: result.refresh_token })),
-          catchError((error) => of(loginFailure({ error: 'Login failed' })))
+          map(( result: TokensType ) => AuthActions.loginSuccess({ access_token:result.access_token, refresh_token: result.refresh_token })),
+          catchError((error) =>  of(AuthActions.loginFailure({error: error.error.message})))
         )
       )
     )
@@ -32,7 +24,7 @@ export class AuthEffects {
   loginSuccess$ = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(loginSuccess),
+        ofType(AuthActions.loginSuccess),
         // Redirect the user after a successful login
         tap(() => this.router.navigate(['/dashboard']))
       ),
@@ -40,12 +32,12 @@ export class AuthEffects {
   );
   refreshAccessToken$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(refreshAccessToken),
+      ofType(AuthActions.refreshAccessToken),
       withLatestFrom(this.store.pipe(select(selectRefreshToken))), // Combine with the current refresh token from the store
       mergeMap(([action, refresh_token]) =>
         this.authService.refreshAccessToken(refresh_token).pipe(
-          map((tokens) => refreshAccessTokenSuccess({ access_token: tokens.access_token })),
-          catchError((error) => of(refreshAccessTokenFailure({ error: 'Failed to refresh access token' })))
+          map((tokens) => AuthActions.refreshAccessTokenSuccess({ access_token: tokens.access_token })),
+          catchError((error) => of(AuthActions.refreshAccessTokenFailure({ error: error.error.message })))
         )
       )
     )
@@ -53,7 +45,7 @@ export class AuthEffects {
   logout$ = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(logout),
+        ofType(AuthActions.logout),
         mergeMap(() => this.authService.logout()
           .pipe(
             retryWhen(errors =>
@@ -70,12 +62,12 @@ export class AuthEffects {
               )
             ),
             tap(() => {
-              this.store.dispatch(logoutSuccess())
+              this.store.dispatch(AuthActions.logoutSuccess())
               this.authService.clearTokensFromLocalStorage();
               this.router.navigate(['/authentication/login']); // Redirect to the login page after logout
             }),
             catchError(() => {
-              this.store.dispatch(logoutFailure())
+              this.store.dispatch(AuthActions.logoutFailure())
               this.authService.clearTokensFromLocalStorage();
               this.router.navigate(['/authentication/login']);
               return EMPTY;
@@ -85,7 +77,5 @@ export class AuthEffects {
     { dispatch: false }
   );
 
-  constructor(private actions$: Actions, private router: Router, private authService: AuthService,private store:Store) {
-    console.log('construct')
-  }
+  constructor(private actions$: Actions, private router: Router, private authService: AuthService,private store:Store) {}
 }

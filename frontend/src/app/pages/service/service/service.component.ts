@@ -1,9 +1,12 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {MatButtonModule} from "@angular/material/button";
 import {MatCardModule} from "@angular/material/card";
-import {NgForOf} from "@angular/common";
+import {AsyncPipe, NgForOf} from "@angular/common";
 import {TablerIconsModule} from "angular-tabler-icons";
-import {productsData} from "../../dashboard/dashboard.component";
+import {Store} from "@ngrx/store";
+import { ServiceActions, ServiceSelectors } from '../service-store';
+import {Observable} from "rxjs";
+import {ServiceModel} from "../../../core/models/service.model";
 interface productcards {
   id: number;
   imgSrc: string;
@@ -14,16 +17,18 @@ interface productcards {
 @Component({
   selector: 'app-service',
   standalone: true,
-    imports: [
-        MatButtonModule,
-        MatCardModule,
-        NgForOf,
-        TablerIconsModule
-    ],
+  imports: [
+    MatButtonModule,
+    MatCardModule,
+    NgForOf,
+    TablerIconsModule,
+    AsyncPipe
+  ],
   templateUrl: './service.component.html',
   styleUrl: './service.component.scss'
 })
-export class ServiceComponent {
+export class ServiceComponent implements OnInit {
+  services$ !: Observable<ServiceModel[] | null>
   productcards: productcards[] = [
     {
       id: 1,
@@ -61,4 +66,12 @@ export class ServiceComponent {
       rprice: '375',
     },
   ];
+  constructor(private readonly store: Store) {
+    this.store.dispatch(ServiceActions.pageEnter())
+  }
+
+  ngOnInit(): void {
+    this.services$ = this.store.select(ServiceSelectors.selectServices);
+  }
+
 }
