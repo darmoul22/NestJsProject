@@ -20,10 +20,10 @@ export class FirebaseFactory {
     }
 
     getFirebaseConfig(): FirebaseOptions {
-       return  this.config.get<StorageConfigType>(ConfigKey.STORAGE) satisfies FirebaseOptions
+       return this.config.get<StorageConfigType>(ConfigKey.STORAGE) satisfies FirebaseOptions
     }
 
     getFirebaseStorage() {
-        return getStorage(this.firebaseApp, this.getFirebaseConfig().storageBucket)
+        return getStorage(this.firebaseApp)
     }
 }

@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsNumber, IsNumberString, IsString } from 'class-validator'
+import {IsEmail, IsNotEmpty, IsNumber, IsNumberString, IsOptional, IsString} from 'class-validator'
 
 export class CreateCustomerDto {
   @IsString()
@@ -14,6 +14,9 @@ export class CreateCustomerDto {
 
   @IsEmail()
   email: string
+
+  @IsOptional()
+  image: string
 
   @IsString()
   description: string
