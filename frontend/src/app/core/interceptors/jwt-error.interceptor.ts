@@ -13,7 +13,7 @@ export class ErrorInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(req).pipe(
       catchError((error: HttpErrorResponse) => {
-        if (error.status === 401 && error.error && error.error.message === 'Token expired') {
+        if (error.status === 401 && error.error && error.error.message === 'Invalid or expired token') {
           // Access token expired, attempt to refresh it
           return this.tryRefreshAccessToken(req, next);
         }
@@ -23,32 +23,6 @@ export class ErrorInterceptor implements HttpInterceptor {
     );
   }
 
-  // private tryRefreshAccessToken(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-  //   return this.store.pipe(
-  //     select(selectAccessToken),
-  //     withLatestFrom(this.store.pipe(select(selectRefreshToken))),
-  //     switchMap(([accessToken, refreshToken]) => {
-  //       if (accessToken && refreshToken) {
-  //         // Dispatch the refresh action using the current refresh token from the store
-  //         return this.store.dispatch(refreshAccessToken());
-  //       } else {
-  //         // Handle the case where either access token or refresh token is missing
-  //         this.store.dispatch(refreshAccessTokenFailure({ error: 'Missing access or refresh token' }));
-  //         return throwError('Missing access or refresh token');
-  //       }
-  //     }),
-  //     catchError((error) => {
-  //       // Handle refresh failure, for example, dispatch an action to indicate refresh failure
-  //       this.store.dispatch(refreshAccessTokenFailure({ error: 'Failed to refresh access token' }));
-  //       return throwError(error);
-  //     }),
-  //     switchMap(() => {
-  //       // After successfully refreshing the token, retry the original request with the new access token
-  //       const newRequest = this.addAuthorizationHeader(request);
-  //       return next.handle(newRequest);
-  //     })
-  //   );
-  // }
   private tryRefreshAccessToken(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return this.store.pipe(
       select(AuthSelectors.selectAccessToken),

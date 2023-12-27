@@ -9,6 +9,7 @@ import { filters } from './common/config/filters.config'
 import { guards } from './common/config/guards.config'
 import { validateConfig } from './common/config/env/config-validation'
 import { configurations } from './common/config/env/app.config'
+import { FileUploadModule } from './file-upload/file-upload.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { configurations } from './common/config/env/app.config'
     CustomerModule,
     ServiceModule,
     AppointmentModule,
+    FileUploadModule,
   ],
   providers: [...guards, ...filters],
 })

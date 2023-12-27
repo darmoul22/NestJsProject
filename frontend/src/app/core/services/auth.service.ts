@@ -15,7 +15,7 @@ export class AuthService {
   }
 
   login(credentials: LoginFormType): Observable<TokensType>{
-    return this.httpClient.post<TokensType>(this.api_url + 'local/signin',credentials);
+    return this.httpClient.post<TokensType>(this.api_url + 'local/sign-in',credentials);
   }
   logout(){
     return this.httpClient.post(this.api_url + 'logout',{})
