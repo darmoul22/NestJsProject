@@ -2,8 +2,8 @@ import {select, Store} from "@ngrx/store";
 import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from "@angular/common/http";
 import {Injectable} from "@angular/core";
 import {catchError, EMPTY, Observable, of, switchMap, tap, throwError, withLatestFrom} from "rxjs";
-import {refreshAccessToken, refreshAccessTokenFailure} from "../../pages/authentication/auth-store/auth.actions";
-import {selectAccessToken, selectRefreshToken} from "../../pages/authentication/auth-store/auth.selectors";
+import {AuthActions, AuthSelectors } from "src/app/pages/authentication/auth-store";
+
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
@@ -51,8 +51,8 @@ export class ErrorInterceptor implements HttpInterceptor {
   // }
   private tryRefreshAccessToken(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return this.store.pipe(
-      select(selectAccessToken),
-      withLatestFrom(this.store.pipe(select(selectRefreshToken))),
+      select(AuthSelectors.selectAccessToken),
+      withLatestFrom(this.store.pipe(select(AuthSelectors.selectRefreshToken))),
       switchMap(([accessToken, refreshToken]) => this.handleRefreshTokens(accessToken, refreshToken)),
       switchMap(() => this.retryRequestWithNewToken(request, next)),
       catchError((error) => this.handleRefreshFailure(error))
@@ -61,23 +61,23 @@ export class ErrorInterceptor implements HttpInterceptor {
   private handleRefreshTokens(accessToken: string | null, refreshToken: string | null): Observable<void> {
     if (accessToken && refreshToken) {
       // Dispatch the refresh action using the current refresh token from the store
-      this.store.dispatch(refreshAccessToken());
+      this.store.dispatch(AuthActions.refreshAccessToken());
       // Return an observable that completes immediately (or use of(EMPTY))
       return EMPTY;
     } else {
       // Handle the case where either access token or refresh token is missing
-      this.store.dispatch(refreshAccessTokenFailure({ error: 'Missing access or refresh token' }));
+      this.store.dispatch(AuthActions.refreshAccessTokenFailure({ error: 'Missing access or refresh token' }));
       return throwError('Missing access or refresh token');
     }
   }
   private handleRefreshFailure(error: any): Observable<never> {
     // Handle refresh failure, for example, dispatch an action to indicate refresh failure
-    this.store.dispatch(refreshAccessTokenFailure({ error: 'Failed to refresh access token' }));
+    this.store.dispatch(AuthActions.refreshAccessTokenFailure({ error: 'Failed to refresh access token' }));
     return throwError(error);
   }
   private retryRequestWithNewToken(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return this.store.pipe(
-      select(selectAccessToken), // Replace 'selectNewAccessToken' with your actual selector
+      select(AuthSelectors.selectAccessToken), // Replace 'selectNewAccessToken' with your actual selector
       switchMap((newAccessToken: string | null) => {
         if (newAccessToken) {
           // Use the new access token to clone the request with the updated authorization header

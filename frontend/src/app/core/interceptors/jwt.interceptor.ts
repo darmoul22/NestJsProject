@@ -3,7 +3,7 @@ import {AuthService} from "../services/auth.service";
 import {Injectable} from "@angular/core";
 import {Observable} from "rxjs";
 import {select, Store} from "@ngrx/store";
-import {selectAccessToken} from "../../pages/authentication/auth-store/auth.selectors";
+import { AuthSelectors } from "src/app/pages/authentication/auth-store";
 
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
@@ -11,7 +11,7 @@ export class JwtInterceptor implements HttpInterceptor {
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    this.store.pipe(select(selectAccessToken)).subscribe(
+    this.store.pipe(select(AuthSelectors.selectAccessToken)).subscribe(
       (token) => {
     console.log('working', token)
         if (token) {
