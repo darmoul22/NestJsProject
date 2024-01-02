@@ -12,11 +12,25 @@ export const services: ServiceFactory[] = [
     name: 'Service 2',
     description: 'Description 2',
     image: 'https://www.shutterstock.com/image-vector/default-image-icon-vector-missing-600nw-2079504220.jpg'
-
   },
   {
     name: 'Service 3',
     description: 'Description 3',
+    image: 'https://www.shutterstock.com/image-vector/default-image-icon-vector-missing-600nw-2079504220.jpg'
+  },
+  {
+    name: 'Service 4',
+    description: 'Description 4',
+    image: 'https://www.shutterstock.com/image-vector/default-image-icon-vector-missing-600nw-2079504220.jpg'
+  },
+  {
+    name: 'Service 5',
+    description: 'Description 5',
+    image: 'https://www.shutterstock.com/image-vector/default-image-icon-vector-missing-600nw-2079504220.jpg'
+  },
+  {
+    name: 'Service 6',
+    description: 'Description 6',
     image: 'https://www.shutterstock.com/image-vector/default-image-icon-vector-missing-600nw-2079504220.jpg'
   },
 ];

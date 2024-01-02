@@ -10,5 +10,5 @@ export const selectActiveService = createSelector(
   selectServices,
   selectSelectedServiceId,
   (services,id) => {
-    return services?.find(service => service.id === id)
+    return services?.find(service => service.id === id) || null
   })

@@ -1,19 +1,19 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit} from '@angular/core';
 import {MatButtonModule} from "@angular/material/button";
 import {MatCardModule} from "@angular/material/card";
-import {AsyncPipe, NgForOf} from "@angular/common";
+import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
 import {TablerIconsModule} from "angular-tabler-icons";
 import {Store} from "@ngrx/store";
-import { ServiceActions, ServiceSelectors } from '../service-store';
-import {Observable} from "rxjs";
+import {ServiceActions, ServiceSelectors} from '../service-store';
+import {EMPTY, filter, Observable, tap} from "rxjs";
 import {ServiceModel} from "../../../core/models/service.model";
-interface productcards {
-  id: number;
-  imgSrc: string;
-  title: string;
-  price: string;
-  rprice: string;
-}
+import {ServicesListComponent} from "./ui-components/services-list/services-list.component";
+import {MatIconModule} from "@angular/material/icon";
+import {MatMenuModule} from "@angular/material/menu";
+import {MatDialog, MatDialogRef} from "@angular/material/dialog";
+import {ServiceDialogComponent} from "./ui-components/service-dialog/service-dialog.component";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+
 @Component({
   selector: 'app-service',
   standalone: true,
@@ -22,56 +22,45 @@ interface productcards {
     MatCardModule,
     NgForOf,
     TablerIconsModule,
-    AsyncPipe
+    AsyncPipe,
+    ServicesListComponent,
+    NgIf,
+    MatIconModule,
+    MatMenuModule
   ],
   templateUrl: './service.component.html',
-  styleUrl: './service.component.scss'
+  styleUrl: './service.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ServiceComponent implements OnInit {
-  services$ !: Observable<ServiceModel[] | null>
-  productcards: productcards[] = [
-    {
-      id: 1,
-      imgSrc: '/assets/images/products/p1.jpg',
-      title: 'Boat Headphone',
-      price: '285',
-      rprice: '375',
-    },
-    {
-      id: 2,
-      imgSrc: '/assets/images/products/p2.jpg',
-      title: 'MacBook Air Pro',
-      price: '285',
-      rprice: '375',
-    },
-    {
-      id: 3,
-      imgSrc: '/assets/images/products/p3.jpg',
-      title: 'Red Valvet Dress',
-      price: '285',
-      rprice: '375',
-    },
-    {
-      id: 4,
-      imgSrc: '/assets/images/products/p4.jpg',
-      title: 'Cute Soft Teddybear',
-      price: '285',
-      rprice: '375',
-    },
-    {
-      id: 5,
-      imgSrc: '/assets/images/products/p4.jpg',
-      title: 'Cute Soft Teddybear',
-      price: '285',
-      rprice: '375',
-    },
-  ];
-  constructor(private readonly store: Store) {
+  services$ : Observable<ServiceModel[] | null> = this.store.select(ServiceSelectors.selectServices);
+  selectedService$ : Observable<ServiceModel | null> = this.store.select(ServiceSelectors.selectActiveService);
+  private destroyRef = inject(DestroyRef);
+
+  dialogRef!: MatDialogRef<ServiceDialogComponent>
+  constructor(
+    private readonly store: Store,
+    public dialog: MatDialog
+  ) {
     this.store.dispatch(ServiceActions.pageEnter())
   }
 
   ngOnInit(): void {
-    this.services$ = this.store.select(ServiceSelectors.selectServices);
+    this.selectedService$.pipe(
+      filter(service => !!service),
+      tap((data) => {
+        data ? this.handleDialog(data) : EMPTY
+      }),
+    ).subscribe()
   }
-
+  handleDialog(data: ServiceModel){
+    this.dialogRef = this.dialog.open(ServiceDialogComponent, {
+      data,
+    });
+    this.dialogRef.afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.store.dispatch(ServiceActions.clearSelectedService());
+      })
+  }
 }

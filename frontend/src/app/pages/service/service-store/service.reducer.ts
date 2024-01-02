@@ -28,4 +28,14 @@ export const serviceReducer = createReducer(
     loading: false,
     error,
   })),
+  on(ServiceActions.selectService, (state, {selectedServiceId}) => ({
+    ...state,
+    selectedServiceId,
+  })
+  ),
+  on(ServiceActions.clearSelectedService, (state, {}) => ({
+    ...state,
+    selectedServiceId: null,
+  })
+  )
 )
