@@ -11,7 +11,11 @@ export class FirebaseStorage {
         const generatedFileName = `${new Date().getTime()}${file.extension}`
         const filePathInFirebase = `${path}/${generatedFileName}`;
         const fileRef = ref(this.firebaseApp.getFirebaseStorage(), filePathInFirebase)
-        await uploadBytes(fileRef, file.content)
-        return `https://firebasestorage.googleapis.com/v0/b/${fileRef.bucket}/o/${filePathInFirebase}?alt=media`
+        const metadata = {
+            contentType: 'image/png',
+        };
+        await uploadBytes(fileRef, file.content,metadata)
+        const displayPath = filePathInFirebase.replace(/\//g, '%2F');
+        return `https://firebasestorage.googleapis.com/v0/b/${fileRef.bucket}/o/${displayPath}?alt=media`
     }
 }
