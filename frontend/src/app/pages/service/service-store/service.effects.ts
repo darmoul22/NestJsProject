@@ -3,25 +3,40 @@ import {Actions, createEffect, ofType} from "@ngrx/effects";
 import {Router} from "@angular/router";
 import {Store} from "@ngrx/store";
 import { ServiceActions } from ".";
-import {catchError, map, mergeMap, of, tap} from "rxjs";
+import {catchError, concatMap, map, mergeMap, of, tap} from "rxjs";
 import {ServicesService} from "../../../core/services/services.service";
+import {ServiceModel} from "../../../core/models/service.model";
 
 @Injectable()
 export class ServiceEffects {
     pageEnter$ = createEffect(() =>
+      this.actions$.pipe(
+        ofType(ServiceActions.pageEnter),
+        tap(() => this.store.dispatch(ServiceActions.loading())),
+        mergeMap(() => {
+          return this.services
+            .getAllServices()
+            .pipe(
+              map((services) => ServiceActions.loadSuccess({services})),
+              catchError((error) => of(ServiceActions.loadError({error: error.error.message})))
+            )
+        })
+      )
+    )
+  updateService$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(ServiceActions.pageEnter),
+      ofType(ServiceActions.updateService),
       tap(() => this.store.dispatch(ServiceActions.loading())),
-      mergeMap(() => {
+      concatMap((action) => {
         return this.services
-          .getAllServices()
+          .updateService(action.service.id, action.service)
           .pipe(
-            map((services) => ServiceActions.loadSuccess({services})),
-            catchError((error) => of(ServiceActions.loadError({error: error.error.message})))
+            map((service: ServiceModel) =>ServiceActions.updateServiceSuccess({service})),
+            catchError((error) => of(ServiceActions.updateServiceError({error: error.error.message})))
           )
       })
     )
-    )
+  )
 
 
   constructor(

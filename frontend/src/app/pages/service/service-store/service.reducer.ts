@@ -37,5 +37,26 @@ export const serviceReducer = createReducer(
     ...state,
     selectedServiceId: null,
   })
-  )
+  ),
+  on(ServiceActions.updateServiceSuccess,(state, {service}) =>{
+      const updatedIndex = state.services!.findIndex(s => s.id === service.id);
+      console.log('index :', updatedIndex)
+      if (updatedIndex && updatedIndex !== -1 && state.services){
+        const updatedServices = [
+          ...state.services.slice(0, updatedIndex),
+          service,
+          ...state.services.slice(updatedIndex + 1),
+        ];
+
+        return { ...state, services: updatedServices };
+      }
+      return  {...state, loading: false}
+  }
+  ),
+  on(ServiceActions.updateServiceError, (state, {error})=>({
+    ...state,
+    loading: false,
+    error,
+  })
+  ),
 )

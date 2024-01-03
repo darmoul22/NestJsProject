@@ -11,18 +11,32 @@ export class JwtInterceptor implements HttpInterceptor {
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    this.store.pipe(select(AuthSelectors.selectAccessToken)).subscribe(
-      (token) => {
-    console.log('working', token)
-        if (token) {
-          req = req.clone({
-            setHeaders: {
-              Authorization: `Bearer ${token}`
-            }
-          })
+    if (!req.url.includes('refresh')){
+      this.store.pipe(select(AuthSelectors.selectAccessToken)).subscribe(
+        (token) => {
+          if (token) {
+            req = req.clone({
+              setHeaders: {
+                Authorization: `Bearer ${token}`
+              }
+            })
+          }
         }
-      }
-    )
+      )
+    }else {
+      this.store.pipe(select(AuthSelectors.selectRefreshToken)).subscribe(
+        (token) => {
+          if (token) {
+            req = req.clone({
+              setHeaders: {
+                Authorization: `Bearer ${token}`
+              }
+            })
+          }
+        }
+      )
+    }
     return next.handle(req);
   }
+
 }

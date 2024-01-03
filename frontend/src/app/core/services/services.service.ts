@@ -20,8 +20,8 @@ export class ServicesService {
   getServiceById(id: number) {
     return this.httpClient.get(this.api_url + `${id}`);
   }
-  updateService(id: number, service: ServiceModel){
-    return this.httpClient.patch(this.api_url + `${id}`, service);
+  updateService(id: number, service: ServiceModel): Observable<ServiceModel>{
+    return this.httpClient.patch<ServiceModel>(this.api_url + `${id}`, service);
   }
   deleteServiceById(id: number) {
     return this.httpClient.delete(this.api_url + `${id}`);

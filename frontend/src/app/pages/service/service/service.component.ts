@@ -59,8 +59,11 @@ export class ServiceComponent implements OnInit {
     });
     this.dialogRef.afterClosed()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
+      .subscribe((res) => {
         this.store.dispatch(ServiceActions.clearSelectedService());
+        if (res?.action === 'submit'){
+          this.store.dispatch(ServiceActions.updateService({service: res.service}))
+        }
       })
   }
 }

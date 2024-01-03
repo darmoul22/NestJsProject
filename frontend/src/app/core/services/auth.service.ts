@@ -20,8 +20,8 @@ export class AuthService {
   logout(){
     return this.httpClient.post(this.api_url + 'logout',{})
   }
-  refreshAccessToken(refreshToken: string | null): Observable<TokensType>{
-    return this.httpClient.post<TokensType>(this.api_url+ 'refresh',refreshToken);
+  refreshAccessToken(): Observable<TokensType>{
+    return this.httpClient.post<TokensType>(this.api_url+ 'refresh',{});
   }
   clearTokensFromLocalStorage(){
     localStorage.removeItem('auth');

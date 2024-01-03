@@ -33,9 +33,8 @@ export class AuthEffects {
   refreshAccessToken$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthActions.refreshAccessToken),
-      withLatestFrom(this.store.pipe(select(selectRefreshToken))), // Combine with the current refresh token from the store
-      mergeMap(([action, refresh_token]) =>
-        this.authService.refreshAccessToken(refresh_token).pipe(
+      mergeMap(() =>
+        this.authService.refreshAccessToken().pipe(
           map((tokens) => AuthActions.refreshAccessTokenSuccess({ access_token: tokens.access_token })),
           catchError((error) => of(AuthActions.refreshAccessTokenFailure({ error: error.error.message })))
         )

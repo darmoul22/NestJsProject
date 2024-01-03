@@ -31,6 +31,7 @@ import {AuthEffects} from "./pages/authentication/auth-store/auth.effects";
 import {StoreDevtoolsModule} from "@ngrx/store-devtools";
 import {JwtInterceptor} from "./core/interceptors/jwt.interceptor";
 import {localStorageSyncReducer} from "./store/localStorage-sync.reducer";
+import {ErrorInterceptor} from "./core/interceptors/jwt-error.interceptor";
 
 @NgModule({
   declarations: [
@@ -72,6 +73,11 @@ import {localStorageSyncReducer} from "./store/localStorage-sync.reducer";
     {
       provide: HTTP_INTERCEPTORS,
       useClass: JwtInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ErrorInterceptor,
       multi: true
     },
   ]

@@ -13,7 +13,7 @@ export class ErrorInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(req).pipe(
       catchError((error: HttpErrorResponse) => {
-        if (error.status === 401 && error.error && error.error.message === 'Invalid or expired token') {
+        if (error.status === 401) {
           // Access token expired, attempt to refresh it
           return this.tryRefreshAccessToken(req, next);
         }
