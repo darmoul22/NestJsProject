@@ -81,7 +81,7 @@ export class AuthService {
     if (!user?.hashedRt) throw new ForbiddenException('Access Denied')
 
     // Check if refresh token matches
-    const rtMatches = await this.hashingService.compareHashPayload(user.hashedRt, rt)
+    const rtMatches = await this.hashingService.compareHashPayload(rt, user.hashedRt)
     if (!rtMatches) throw new ForbiddenException('Access Denied')
 
     // Get user payload
